@@ -3,9 +3,16 @@ const Tour = require('../models/tourModel');
 // Tour middlewares
 exports.getAllTours = async (req, res) => {
   try {
-    console.log(req.query);
-    const tours = await Tour.find(req.query);
+    // Buile query
+    const queryObj = { ...req.query };
+    const functionWords = ['limit', 'page', 'sort', 'fields'];
+    functionWords.forEach(el => delete queryObj[el]);
+    const query = Tour.find(queryObj);
 
+    // Excute query
+    const tours = await query;
+
+    // Send renponse
     res.status(200).json({
       status: 'success',
       results: tours.length,
