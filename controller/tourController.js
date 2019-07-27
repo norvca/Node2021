@@ -30,6 +30,19 @@ exports.getAllTours = async (req, res) => {
       query = query.select('-__v');
     }
 
+    // 4.Pagination
+    if (req.query.page || req.query.limit) {
+      const page = req.query.page * 1 || 1;
+      const limit = req.query.limit * 1 || 100;
+      const skip = (page - 1) * limit;
+
+      if (skip >= (await Tour.countDocuments())) {
+        throw new Error('This page does not exit');
+      }
+
+      query = query.skip(skip).limit(limit);
+    }
+
     // Excute query
     const tours = await query;
 
